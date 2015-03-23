@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ChatRight
@@ -20,139 +15,96 @@ namespace ChatRight
 
     public partial class MainForm : Form
     {
-        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
-        internal static extern IntPtr GetForegroundWindow();
-
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, ExactSpelling = true, SetLastError = true)]
         internal static extern void MoveWindow(IntPtr hwnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
-        private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-        private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
-        private static readonly IntPtr HWND_TOP = new IntPtr(0);
-        private static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
-        private const UInt32 SWP_NOSIZE = 0x0001;
-        private const UInt32 SWP_NOMOVE = 0x0002;
-        private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
-        private Image logoImage;
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            DatabaseOpen();
-            logoImage = Image.FromFile("ChatRightLogo.png", false);
-        }
-
-        private void DatabaseOpen()
-        {
-            try
-            {
-                objConnect = new DatabaseConnection();
-                conString = Properties.Settings.Default.UsersConnectionString;
-
-                objConnect.connection_string = conString;
-                objConnect.Sql = Properties.Settings.Default.SQL;
-
-                dataSet = objConnect.GetConnection;
-
-                maxRows = dataSet.Tables[0].Rows.Count;
-
-                NavigateRecords();
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-            }            
-        }
-
-        private Point defaultPosition;
-        private const int roundnessRadius = 30;
         private static Color MainBackgroundColor = Color.FromArgb(204, 39, 39);
+        private const int roundnessRadius = 30;
+        private const float borderSize = 6f;
+
+        private DatabaseConnection objConnect;
+        private string conString;
+        private DataRow dataRow;
+        private DataSet dataSet;
+        private Point defaultPosition;
+        private int maxRows;
+
+        private Image logoImage;
+        private NotifyIcon notifyIcon1;
+
+        private GraphicsPath windowShape;
+        private Pen borderPen;
 
         public MainForm()
         {
             InitializeComponent();
             InitializeLocation();
             InitializeControlButtons();
-            //userText.BackColor = MainBackgroundColor;
-            
-        }
-
-        private void InitializeLocation()
-        {
-            SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
-
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            Rectangle workingRect = Screen.PrimaryScreen.WorkingArea;
-            Height = (int)(workingRect.Height * 0.8f);
-            defaultPosition = new Point(workingRect.Width - this.Width, workingRect.Height / 2 - this.Height / 2);
-            MoveWindow(defaultPosition);
-            this.TopMost = true;
-            this.BackColor = MainBackgroundColor;
-            this.notifyIcon1 = new NotifyIcon();
-            this.notifyIcon1.Icon = new Icon("Icon.ico");
-            this.Icon = notifyIcon1.Icon;
         }
 
         private void InitializeControlButtons()
         {
+            Color ButtonBackColor = Color.FromArgb(100, 0, 0);
+            Color ButtonBorderColor = Color.FromArgb(255, 0, 0, 0);
+
             ToolTip closeTooltip = new ToolTip();
             closeTooltip.SetToolTip(CloseButton, "Exit ChatRight");
-            CloseButton.Image = Bitmap.FromFile("CloseButton.png");
-            CloseButton.BackColor = Color.FromArgb(100, 0, 0);
-            CloseButton.FlatAppearance.BorderColor = Color.FromArgb(255, 0, 0, 0);
+            CloseButton.Image = Bitmap.FromFile(@"Resources/CloseButton.png");
+            CloseButton.BackColor = ButtonBackColor;
+            CloseButton.FlatAppearance.BorderColor = ButtonBorderColor;
             CloseButton.FlatStyle = FlatStyle.Flat;
 
             ToolTip slideTooltip = new ToolTip();
             slideTooltip.SetToolTip(SlideButton, "Hide ChatRight");
-            SlideButton.Image = Bitmap.FromFile("Slide.png");
-            SlideButton.BackColor = Color.FromArgb(100, 0, 0);
-            SlideButton.FlatAppearance.BorderColor = Color.FromArgb(255, 0, 0, 0);
+            SlideButton.Image = Bitmap.FromFile(@"Resources/Slide.png");
+            SlideButton.BackColor = ButtonBackColor;
+            SlideButton.FlatAppearance.BorderColor = ButtonBorderColor;
             SlideButton.FlatStyle = FlatStyle.Flat;
 
             UnslideButton.Visible = false;
             UnslideButton.Height = Height - 2 * roundnessRadius;
             UnslideButton.Location = new Point(UnslideButton.Location.X, Height / 2 - UnslideButton.Height / 2);
-            UnslideButton.Image = Bitmap.FromFile("Unslide.png");
-            UnslideButton.BackColor = Color.FromArgb(100, 0, 0);
-            UnslideButton.FlatAppearance.BorderColor = Color.FromArgb(255, 0, 0, 0);
+            UnslideButton.Image = Bitmap.FromFile(@"Resources/Unslide.png");
+            UnslideButton.BackColor = ButtonBackColor;
+            UnslideButton.FlatAppearance.BorderColor = ButtonBorderColor;
             UnslideButton.FlatStyle = FlatStyle.Flat;
 
             ToolTip hideTooltip = new ToolTip();
             hideTooltip.SetToolTip(HideButton, "Minimize to tray");
-            HideButton.Image = Bitmap.FromFile("Hide.png");
-            HideButton.BackColor = Color.FromArgb(100, 0, 0);
-            HideButton.FlatAppearance.BorderColor = Color.FromArgb(255, 0, 0, 0);
+            HideButton.Image = Bitmap.FromFile(@"Resources/Hide.png");
+            HideButton.BackColor = ButtonBackColor;
+            HideButton.FlatAppearance.BorderColor = ButtonBorderColor;
             HideButton.FlatStyle = FlatStyle.Flat;
 
-
-            this.notifyIcon1.Text = "ChatRight";
-            this.notifyIcon1.Visible = true;
-            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            notifyIcon1 = new NotifyIcon();
+            this.Icon = notifyIcon1.Icon;
+            notifyIcon1.Text = "ChatRight";
+            notifyIcon1.Visible = true;
+            notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            notifyIcon1.Icon = new Icon(@"Resources\Icon.ico");
             notifyIcon1.Visible = false;
-
         }
 
-        private void MoveWindow(Point location)
+        private void InitializeLocation()
         {
-            IntPtr id;
-            id = this.Handle;
-            MoveWindow(id, location.X, location.Y, Width, Height, true);
+            FormBorderStyle = FormBorderStyle.None;
+            Rectangle workingRect = Screen.PrimaryScreen.WorkingArea;
+            Height = (int)(workingRect.Height * 0.8f);
+            defaultPosition = new Point(workingRect.Width - this.Width, workingRect.Height / 2 - this.Height / 2);
+            MoveWindow(defaultPosition);
+
+            BackColor = MainBackgroundColor;
+            ShowInTaskbar = false;
+
+            windowShape = CreateRoundRectangle(new Rectangle(0, 0, Width, Height), roundnessRadius, RectangleCorners.TopLeft | RectangleCorners.BottomLeft);
+            this.Region = new Region(windowShape);
+            borderPen = new Pen(Color.Black, borderSize);
         }
 
-        protected override void OnPaint(PaintEventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            GraphicsPath shape = new GraphicsPath();
-            shape = CreateRoundRectangle(new Rectangle(0, 0, Width, Height), roundnessRadius, RectangleCorners.TopLeft | RectangleCorners.BottomLeft);
-            this.Region = new Region(shape);
-            Pen borderPen = new Pen(Color.Black, 6);
-            this.TopMost = true;
-            e.Graphics.DrawImage(logoImage, new Point(10, 10));
-            e.Graphics.DrawPath(borderPen, shape);
-            e.Graphics.DrawLine(borderPen, new Point(0, logoImage.Height + 10), new Point(Width, logoImage.Height + 10));
-            base.OnPaint(e);
+            DatabaseOpen();
+            logoImage = Image.FromFile(@"Resources\ChatRightLogo.png", false);
         }
 
         public GraphicsPath CreateRoundRectangle(Rectangle r, int radius,
@@ -168,16 +120,16 @@ namespace ChatRight
             brc.X = r.Right - 2 * radius;
 
             Point[] n = new Point[] {
-        new Point(tlc.Left, tlc.Bottom), tlc.Location,
-        new Point(tlc.Right, tlc.Top), trc.Location,
-        new Point(trc.Right, trc.Top),
-        new Point(trc.Right, trc.Bottom),
-        new Point(brc.Right, brc.Top),
-        new Point(brc.Right, brc.Bottom),
-        new Point(brc.Left, brc.Bottom),
-        new Point(blc.Right, blc.Bottom),
-        new Point(blc.Left, blc.Bottom), blc.Location
-    };
+            new Point(tlc.Left, tlc.Bottom), tlc.Location,
+            new Point(tlc.Right, tlc.Top), trc.Location,
+            new Point(trc.Right, trc.Top),
+            new Point(trc.Right, trc.Bottom),
+            new Point(brc.Right, brc.Top),
+            new Point(brc.Right, brc.Bottom),
+            new Point(brc.Left, brc.Bottom),
+            new Point(blc.Right, blc.Bottom),
+            new Point(blc.Left, blc.Bottom), blc.Location
+            };
 
             GraphicsPath p = new GraphicsPath();
             p.StartFigure();
@@ -224,7 +176,7 @@ namespace ChatRight
             //Bottom Edge
             p.AddLine(n[8], n[9]);
 
-            //Bottom Left Corne
+            //Bottom Left Corner
             if ((RectangleCorners.BottomLeft & corners)
                 == RectangleCorners.BottomLeft)
             {
@@ -242,9 +194,48 @@ namespace ChatRight
             return p;
         }
 
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.DrawImage(logoImage, new Point(10, 10));
+            e.Graphics.DrawPath(borderPen, windowShape);
+            e.Graphics.DrawLine(borderPen, new Point(0, logoImage.Height + 10), new Point(Width, logoImage.Height + 10));
+
+            this.TopMost = true; // HUE HUE HUE
+
+            base.OnPaint(e);
+        }
+
         private void CloseButton_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void DatabaseOpen()
+        {
+            try
+            {
+                objConnect = new DatabaseConnection();
+                conString = Properties.Settings.Default.UsersConnectionString;
+
+                objConnect.connection_string = conString;
+                objConnect.Sql = Properties.Settings.Default.SQL;
+
+                dataSet = objConnect.GetConnection;
+
+                maxRows = dataSet.Tables[0].Rows.Count;
+
+                NavigateRecords();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
+            }
+        }
+
+        private void HideButton_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;
+            HideForm();
         }
 
         private void SlideButton_Click(object sender, EventArgs e)
@@ -259,8 +250,6 @@ namespace ChatRight
             UnslideButton.Visible = false;
             MoveWindow(defaultPosition);
         }
-
-        private System.Windows.Forms.NotifyIcon notifyIcon1;
 
         private void HideForm()
         {
@@ -286,18 +275,28 @@ namespace ChatRight
             notifyIcon1.Visible = false;
         }
 
-        private void HideButton_Click(object sender, EventArgs e)
+        // |
+        // |    MAGIC.DLL
+        // |
+        //\_/
+
+        protected override CreateParams CreateParams
         {
-            this.WindowState = FormWindowState.Minimized;
-            HideForm();
+            get
+            {
+                // Turn on WS_EX_TOOLWINDOW style bit
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x80;
+                return cp;
+            }
         }
 
-        DatabaseConnection objConnect;
-        string conString;
-        DataSet dataSet;
-        DataRow dataRow;
-        int maxRows;
-        int inc = 0;        
+        private void MoveWindow(Point location)
+        {
+            IntPtr id;
+            id = this.Handle;
+            MoveWindow(id, location.X, location.Y, Width, Height, true);
+        }
 
         private void NavigateRecords()
         {
