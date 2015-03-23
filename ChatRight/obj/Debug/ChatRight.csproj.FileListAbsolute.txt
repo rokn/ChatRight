@@ -1,0 +1,16 @@
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\obj\Debug\ChatRight.MainForm.resources
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\obj\Debug\ChatRight.csproj.GenerateResource.Cache
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\obj\Debug\ChatNow.exe
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\obj\Debug\ChatNow.pdb
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\obj\Debug\ChatNow.Properties.Resources.resources
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\CloseButton.png
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\Hide.png
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\Icon.ico
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\Slide.png
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\Unslide.png
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\Resources\Users_log.ldf
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\ChatRightLogo.png
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\Resources\Users.mdf
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\ChatNow.exe.config
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\ChatNow.exe
+E:\Dropbox\ChatProgram\ChatNow\ChatNow\bin\Debug\ChatNow.pdb
