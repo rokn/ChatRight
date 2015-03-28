@@ -1,12 +1,10 @@
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\bin\Debug\ChatRightServer.exe.config
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\bin\Debug\ChatRightServer.exe
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\bin\Debug\ChatRightServer.pdb
-E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\obj\Debug\ChatRightServer.Form1.resources
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\obj\Debug\ChatRightServer.Properties.Resources.resources
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\obj\Debug\ChatRightServer.csproj.GenerateResource.Cache
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\obj\Debug\ChatRightServer.exe
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\obj\Debug\ChatRightServer.pdb
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\bin\Debug\Lidgren.Network.dll
 E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\obj\Debug\ChatRightServer.csprojResolveAssemblyReference.cache
-E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\bin\Debug\Users_log.ldf
-E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\bin\Debug\Users.mdf
+E:\Dropbox\ChatProgram\ChatRight\ChatRightServer\obj\Debug\ChatRightServer.ServerForm.resources

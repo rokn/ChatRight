@@ -9,7 +9,6 @@ namespace ChatRight
     public enum Packets
     {
         CONNECT,
-        REGISTER
     }
 
     public static class NetworkingClient
@@ -68,25 +67,20 @@ namespace ChatRight
             switch (packet)
             {
                 case Packets.CONNECT:
+                    MessageBox.Show("Connection Approved");
                     break;
             }
         }
 
         public static void SendRegistrationData(string username, string email, string password)
         {
-            NetOutgoingMessage outMsg = Client.CreateMessage();
-            outMsg.Write((byte)Packets.REGISTER);
-            outMsg.Write(username);
-            outMsg.Write(email);
-            outMsg.Write(EncryptData(password));
-            Client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
 
-        private static string EncryptData(string dataToEncrypt)
+        private static string EncryptData(string data)
         {
-            byte[] data = System.Text.Encoding.ASCII.GetBytes(dataToEncrypt);
+            byte[] data = System.Text.Encoding.ASCII.GetBytes(inputString);
             data = new System.Security.Cryptography.SHA256Managed().ComputeHash(data);
-            return System.Text.Encoding.ASCII.GetString(data);
+            String hash = System.Text.Encoding.ASCII.GetString(data);
         }
     }
 }

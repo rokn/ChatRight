@@ -67,17 +67,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseConnection.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="ServerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="ServerForm.Designer.cs">
+      <DependentUpon>ServerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="NetworkingServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="ServerForm.resx">
+      <DependentUpon>ServerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -105,13 +105,6 @@
     <Content Include="Lidgren.Network.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Users_log.ldf">
-      <DependentUpon>Users.mdf</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="Users.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

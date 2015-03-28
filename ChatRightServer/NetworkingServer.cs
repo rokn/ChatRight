@@ -9,11 +9,11 @@ namespace ChatRightServer
     public enum Packets
     {
         CONNECT,
+        REGISTER
     }
 
     public static class NetworkingServer
     {
-        private static NetPeer Peer;
         private static NetServer Server;
         private static NetPeerConfiguration Config;
 
@@ -24,13 +24,12 @@ namespace ChatRightServer
         {
             Config = new NetPeerConfiguration("ChatRight");
             Config.Port = 14242;
-            Config.MaximumConnections = 7;
+            Config.MaximumConnections = int.MaxValue;
             Config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             Server = new NetServer(Config);
             Server.Start();
             MessageBox.Show("Server started");
             IsInitialized = true;
-            Peer = Server;
         }
 
         public static void Update()
@@ -63,6 +62,9 @@ namespace ChatRightServer
         {
             switch (packet)
             {
+                case Packets.REGISTER:
+                    ServerForm.UserRegister(inc.ReadString(), inc.ReadString(), inc.ReadString());
+                    break;
             }
         }
 

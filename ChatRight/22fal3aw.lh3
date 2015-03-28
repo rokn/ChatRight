@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace ChatRight
@@ -155,62 +154,27 @@ namespace ChatRight
             LoginButton.Location = new Point((this.Width - LoginButton.Width) / 2, logoHeight + workingAreaHeight / 2 - LoginButton.Height - 5);
             Menus[MenuType.StartUp].Add(LoginButton);
 
-            RegisterButton.Font = MainFont;
-            RegisterButton.BackColor = ButtonBackColor;
-            RegisterButton.FlatAppearance.BorderColor = ButtonBorderColor;
-            RegisterButton.FlatStyle = FlatStyle.Flat;
-            RegisterButton.Location = new Point((this.Width - RegisterButton.Width) / 2, logoHeight + workingAreaHeight / 2 + 5);
-            Menus[MenuType.StartUp].Add(RegisterButton);
+            SignUpButton.Font = MainFont;
+            SignUpButton.BackColor = ButtonBackColor;
+            SignUpButton.FlatAppearance.BorderColor = ButtonBorderColor;
+            SignUpButton.FlatStyle = FlatStyle.Flat;
+            SignUpButton.Location = new Point((this.Width - SignUpButton.Width) / 2, logoHeight + workingAreaHeight / 2 + 5);
+            Menus[MenuType.StartUp].Add(SignUpButton);
 
-            userText.AutoSize = true;
             userText.Font = messageFont;
-            emailText.AutoSize = true;
             emailText.Font = messageFont;
-            passText.AutoSize = true;
             passText.Font = messageFont;
-            passConfirmText.AutoSize = true;
-            passConfirmText.Font = messageFont;
-            usernameLabel.Font = messageFont;
-            emailLabel.Font = messageFont;
-            passwordLabel.Font = messageFont;
-            passConfirmLabel.Font = messageFont;
             chatBox.Font = messageFont;
 
             chatBox.Location = new Point(chatBox.Location.X, (Height - roundnessRadius) - chatBox.Height);
 
-            userText.Location = new Point(emailLabel.Location.X, usernameLabel.Location.Y + usernameLabel.Height + 2);
-
-            emailLabel.Location = new Point(emailLabel.Location.X, userText.Location.Y + userText.Height + 10);
-            emailText.Location = new Point(emailLabel.Location.X, emailLabel.Location.Y + emailLabel.Height + 2);
-
-            passwordLabel.Location = new Point(emailLabel.Location.X, emailText.Location.Y + emailText.Height + 10);
-            passText.Location = new Point(emailLabel.Location.X, passwordLabel.Location.Y + passwordLabel.Height + 2);
-            passText.PasswordChar = '*';
-
-            passConfirmLabel.Location = new Point(emailLabel.Location.X, passText.Location.Y + passText.Height + 10);
-            passConfirmText.Location = new Point(emailLabel.Location.X, passConfirmLabel.Location.Y + passConfirmLabel.Height + 2);
-            passConfirmText.PasswordChar = '*';
-
-            sendRegisterButton.Font = MainFont;
-            sendRegisterButton.BackColor = ButtonBackColor;
-            sendRegisterButton.FlatAppearance.BorderColor = ButtonBorderColor;
-            sendRegisterButton.FlatStyle = FlatStyle.Flat;
-            sendRegisterButton.Location = new Point((this.Width - RegisterButton.Width) / 2, passConfirmText.Location.Y + passConfirmText.Height + 20);
-            Menus[MenuType.Register].Add(sendRegisterButton);
-
             Menus[MenuType.Register].Add(userText);
-            Menus[MenuType.Register].Add(usernameLabel);
             Menus[MenuType.Register].Add(emailText);
-            Menus[MenuType.Register].Add(emailLabel);
             Menus[MenuType.Register].Add(passText);
-            Menus[MenuType.Register].Add(passwordLabel);
-            Menus[MenuType.Register].Add(passConfirmText);
-            Menus[MenuType.Register].Add(passConfirmLabel);
-
             Menus[MenuType.MainScreen].Add(chatBox);
             Menus[MenuType.MainScreen].Add(mainChatBox);
 
-            ChangeMenu(MenuType.StartUp);
+            ChangeMenu(MenuType.Register);
 
             foreach (Control control in staticControls)
             {
@@ -442,56 +406,13 @@ namespace ChatRight
             MoveWindow(id, location.X, location.Y, Width, Height, true);
         }
 
-        private void Register_Button_Click(object sender, EventArgs e)
+        private void SignUpButton_Click(object sender, EventArgs e)
         {
             ChangeMenu(MenuType.Register);
-        }
-
-        private bool Register()
-        {
-            if (passText.Text != passConfirmText.Text)
-            {
-                return false;
-            }
-
-            if (ValidatePassword(passText.Text))
-            {
-                NetworkingClient.SendRegistrationData(userText.Text, emailText.Text, passText.Text);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         private void LoginButton_Click(object sender, EventArgs e)
         {
         }
-
-        private void sendRegisterButton_Click(object sender, EventArgs e)
-        {
-            Register();
-        }
-
-        //private void passText_TextChanged(object sender, EventArgs e)
-        //{
-        //    int length = passText.Text.Length;
-        //    passText.Text = "";
-        //    for (int i = 0; i < length; i++)
-        //    {
-        //        passText.Text += '*';
-        //    }
-        //}
-
-        //private void passConfirmText_TextChanged(object sender, EventArgs e)
-        //{
-        //    int length = passConfirmText.Text.Length;
-        //    passConfirmText.Text = "";
-        //    for (int i = 0; i < length; i++)
-        //    {
-        //        passConfirmText.Text += '*';
-        //    }
-        //}
     }
 }
