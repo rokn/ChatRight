@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -13,37 +15,87 @@ namespace ChatRight
         All = TopLeft | TopRight | BottomLeft | BottomRight
     }
 
+    public enum MenuType
+    {
+        StartUp, Register, SignUp, Connecting, MainScreen, Contacts, Profile, None
+    }
+
     public partial class MainForm : Form
     {
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, ExactSpelling = true, SetLastError = true)]
         internal static extern void MoveWindow(IntPtr hwnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
+        public static Font MainFont;
+        public static Font messageFont;
         private static Color MainBackgroundColor = Color.FromArgb(204, 39, 39);
         private const int roundnessRadius = 30;
         private const float borderSize = 6f;
-
-        private DatabaseConnection objConnect;
-        private string conString;
-        private DataRow dataRow;
-        private DataSet dataSet;
+        private static int logoHeight;
+        private static int workingAreaHeight;
         private Point defaultPosition;
-        private int maxRows;
 
         private Image logoImage;
         private NotifyIcon notifyIcon1;
 
         private GraphicsPath windowShape;
         private Pen borderPen;
+        private Dictionary<MenuType, List<Control>> Menus;
+        private MenuType currentMenu;
+        private List<Control> staticControls;
+
+        private PrivateFontCollection fontCollection;
+        private Timer networkUpdateTimer = new Timer();
 
         public MainForm()
         {
             InitializeComponent();
+            InitializeMenus();
             InitializeLocation();
-            InitializeControlButtons();
+            InitializeControls();
+            InitializeNetworking();
         }
 
-        private void InitializeControlButtons()
+        private void InitializeNetworking()
         {
+            networkUpdateTimer.Interval = 20;
+            networkUpdateTimer.Start();
+            networkUpdateTimer.Tick += networkUpdateTimer_Tick;
+            NetworkingClient.InitializeClient("localhost");
+        }
+
+        private void networkUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            NetworkingClient.Update();
+        }
+
+        private void InitializeMenus()
+        {
+            currentMenu = MenuType.None;
+            Menus = new Dictionary<MenuType, List<Control>>();
+            for (int i = 0; i < Enum.GetNames(typeof(MenuType)).Length; i++)
+            {
+                Menus.Add((MenuType)i, new List<Control>());
+            }
+
+            staticControls = new List<Control>();
+        }
+
+        private void InitializeControls()
+        {
+            foreach (Control control in Controls)
+            {
+                control.Visible = false;
+            }
+
+            logoImage = Image.FromFile(@"Resources\ChatRightLogo.png", false);
+            logoHeight = logoImage.Height + 10;
+            workingAreaHeight = Height - logoHeight;
+
+            fontCollection = new PrivateFontCollection();
+            fontCollection.AddFontFile(@"Resources/James Almacen.ttf");
+            MainFont = new Font(fontCollection.Families[0], 15);
+            messageFont = new Font(fontCollection.Families[0], 10);
+
             Color ButtonBackColor = Color.FromArgb(100, 0, 0);
             Color ButtonBorderColor = Color.FromArgb(255, 0, 0, 0);
 
@@ -53,6 +105,7 @@ namespace ChatRight
             CloseButton.BackColor = ButtonBackColor;
             CloseButton.FlatAppearance.BorderColor = ButtonBorderColor;
             CloseButton.FlatStyle = FlatStyle.Flat;
+            staticControls.Add(CloseButton);
 
             ToolTip slideTooltip = new ToolTip();
             slideTooltip.SetToolTip(SlideButton, "Hide ChatRight");
@@ -60,6 +113,7 @@ namespace ChatRight
             SlideButton.BackColor = ButtonBackColor;
             SlideButton.FlatAppearance.BorderColor = ButtonBorderColor;
             SlideButton.FlatStyle = FlatStyle.Flat;
+            staticControls.Add(SlideButton);
 
             UnslideButton.Visible = false;
             UnslideButton.Height = Height - 2 * roundnessRadius;
@@ -68,6 +122,7 @@ namespace ChatRight
             UnslideButton.BackColor = ButtonBackColor;
             UnslideButton.FlatAppearance.BorderColor = ButtonBorderColor;
             UnslideButton.FlatStyle = FlatStyle.Flat;
+            staticControls.Add(UnslideButton);
 
             ToolTip hideTooltip = new ToolTip();
             hideTooltip.SetToolTip(HideButton, "Minimize to tray");
@@ -75,6 +130,14 @@ namespace ChatRight
             HideButton.BackColor = ButtonBackColor;
             HideButton.FlatAppearance.BorderColor = ButtonBorderColor;
             HideButton.FlatStyle = FlatStyle.Flat;
+            staticControls.Add(HideButton);
+
+            SendMessageButton.Image = Bitmap.FromFile(@"Resources/Slide.png");
+            SendMessageButton.BackColor = ButtonBackColor;
+            SendMessageButton.FlatAppearance.BorderColor = ButtonBorderColor;
+            SendMessageButton.FlatStyle = FlatStyle.Flat;
+            SendMessageButton.Location = new Point(SendMessageButton.Location.X, (Height - roundnessRadius) - SendMessageButton.Height);
+            Menus[MenuType.MainScreen].Add(SendMessageButton);
 
             notifyIcon1 = new NotifyIcon();
             this.Icon = notifyIcon1.Icon;
@@ -83,6 +146,63 @@ namespace ChatRight
             notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             notifyIcon1.Icon = new Icon(@"Resources\Icon.ico");
             notifyIcon1.Visible = false;
+
+            LoginButton.Font = MainFont;
+            LoginButton.BackColor = ButtonBackColor;
+            LoginButton.FlatAppearance.BorderColor = ButtonBorderColor;
+            LoginButton.FlatStyle = FlatStyle.Flat;
+            LoginButton.Location = new Point((this.Width - LoginButton.Width) / 2, logoHeight + workingAreaHeight / 2 - LoginButton.Height - 5);
+            Menus[MenuType.StartUp].Add(LoginButton);
+
+            SignUpButton.Font = MainFont;
+            SignUpButton.BackColor = ButtonBackColor;
+            SignUpButton.FlatAppearance.BorderColor = ButtonBorderColor;
+            SignUpButton.FlatStyle = FlatStyle.Flat;
+            SignUpButton.Location = new Point((this.Width - SignUpButton.Width) / 2, logoHeight + workingAreaHeight / 2 + 5);
+            Menus[MenuType.StartUp].Add(SignUpButton);
+
+            userText.Font = messageFont;
+            emailText.Font = messageFont;
+            passText.Font = messageFont;
+            chatBox.Font = messageFont;
+
+            chatBox.Location = new Point(chatBox.Location.X, (Height - roundnessRadius) - chatBox.Height);
+
+            Menus[MenuType.Register].Add(userText);
+            Menus[MenuType.Register].Add(emailText);
+            Menus[MenuType.Register].Add(passText);
+            Menus[MenuType.MainScreen].Add(chatBox);
+            Menus[MenuType.MainScreen].Add(mainChatBox);
+
+            ChangeMenu(MenuType.Register);
+
+            foreach (Control control in staticControls)
+            {
+                if (control.Name != UnslideButton.Name)
+                {
+                    control.Visible = true;
+                }
+            }
+        }
+
+        private void ChangeMenu(MenuType menuType)
+        {
+            if (currentMenu == menuType)
+            {
+                return;
+            }
+
+            foreach (Control control in Menus[currentMenu])
+            {
+                control.Visible = false;
+            }
+
+            currentMenu = menuType;
+
+            foreach (Control control in Menus[currentMenu])
+            {
+                control.Visible = true;
+            }
         }
 
         private void InitializeLocation()
@@ -103,8 +223,6 @@ namespace ChatRight
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            DatabaseOpen();
-            logoImage = Image.FromFile(@"Resources\ChatRightLogo.png", false);
         }
 
         public GraphicsPath CreateRoundRectangle(Rectangle r, int radius,
@@ -196,40 +314,18 @@ namespace ChatRight
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            base.OnPaint(e);
+
             e.Graphics.DrawImage(logoImage, new Point(10, 10));
             e.Graphics.DrawPath(borderPen, windowShape);
-            e.Graphics.DrawLine(borderPen, new Point(0, logoImage.Height + 10), new Point(Width, logoImage.Height + 10));
+            e.Graphics.DrawLine(borderPen, new Point(0, logoHeight), new Point(Width, logoHeight));
 
             this.TopMost = true; // HUE HUE HUE
-
-            base.OnPaint(e);
         }
 
         private void CloseButton_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void DatabaseOpen()
-        {
-            try
-            {
-                objConnect = new DatabaseConnection();
-                conString = Properties.Settings.Default.UsersConnectionString;
-
-                objConnect.connection_string = conString;
-                objConnect.Sql = Properties.Settings.Default.SQL;
-
-                dataSet = objConnect.GetConnection;
-
-                maxRows = dataSet.Tables[0].Rows.Count;
-
-                NavigateRecords();
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-            }
         }
 
         private void HideButton_Click(object sender, EventArgs e)
@@ -240,13 +336,21 @@ namespace ChatRight
 
         private void SlideButton_Click(object sender, EventArgs e)
         {
+            foreach (Control control in Controls)
+            {
+                control.Visible = false;
+            }
             UnslideButton.Visible = true;
-            Point newPos = new Point(defaultPosition.X + Width - 27, defaultPosition.Y);
+            Point newPos = new Point(((defaultPosition.X + Width) - UnslideButton.Width) - UnslideButton.Location.X, defaultPosition.Y);
             MoveWindow(newPos);
         }
 
         private void UnslideButton_Click(object sender, EventArgs e)
         {
+            foreach (Control control in Controls)
+            {
+                control.Visible = true;
+            }
             UnslideButton.Visible = false;
             MoveWindow(defaultPosition);
         }
@@ -298,12 +402,13 @@ namespace ChatRight
             MoveWindow(id, location.X, location.Y, Width, Height, true);
         }
 
-        private void NavigateRecords()
+        private void SignUpButton_Click(object sender, EventArgs e)
         {
-            dataRow = dataSet.Tables[0].Rows[0];
-            userText.Text = dataRow.ItemArray.GetValue(1).ToString();
-            emailText.Text = dataRow.ItemArray.GetValue(2).ToString();
-            passText.Text = dataRow.ItemArray.GetValue(3).ToString(); ;
+            ChangeMenu(MenuType.Register);
+        }
+
+        private void LoginButton_Click(object sender, EventArgs e)
+        {
         }
     }
 }

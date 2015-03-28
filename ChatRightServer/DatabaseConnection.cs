@@ -2,13 +2,13 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ChatRight
+namespace ChatRightServer
 {
-    class DatabaseConnection
+    internal class DatabaseConnection
     {
         private string sql_string;
         private string strCon;
-        SqlDataAdapter dataAdapter_1;
+        private SqlDataAdapter dataAdapter_1;
 
         public string Sql
         {
