@@ -62,7 +62,7 @@ namespace ChatRight
             networkUpdateTimer.Interval = 20;
             networkUpdateTimer.Start();
             networkUpdateTimer.Tick += networkUpdateTimer_Tick;
-            NetworkingClient.InitializeClient("37.157.138.76");
+            NetworkingClient.InitializeClient("localhost");
         }
 
         private void networkUpdateTimer_Tick(object sender, EventArgs e)
@@ -232,10 +232,6 @@ namespace ChatRight
             mainChatBox.Width = Width - 22;
             mainChatBox.Height = workingAreaHeight - (this.Height - chatBox.Location.Y) - 20;
             mainChatBox.Location = new Point((Width - mainChatBox.Width) / 2, logoHeight + 8);
-            mainChatBox.ScrollBars = ScrollBars.Vertical;
-            mainChatBox.ReadOnly = true;
-
-            chatBox.KeyPress += chatBox_KeyPress;
 
             Menus[MenuType.MainScreen].Add(chatBox);
             Menus[MenuType.MainScreen].Add(mainChatBox);
@@ -418,11 +414,7 @@ namespace ChatRight
 
         private void UnslideButton_Click(object sender, EventArgs e)
         {
-            foreach (Control control in Menus[currentMenu])
-            {
-                control.Visible = true;
-            }
-            foreach (Control control in staticControls)
+            foreach (Control control in Controls)
             {
                 control.Visible = true;
             }
@@ -531,7 +523,6 @@ namespace ChatRight
                 userText.Clear();
                 passText.Clear();
                 emailText.Clear();
-                passConfirmText.Clear();
             }
         }
 
@@ -562,7 +553,6 @@ namespace ChatRight
             if (chatBox.Text.Length > 0)
             {
                 NetworkingClient.SendChatMessage(UserName, chatBox.Text);
-                chatBox.Clear();
                 return true;
             }
             else
@@ -576,13 +566,9 @@ namespace ChatRight
             SendChatMessage();
         }
 
-        public static void RecieveMessage(string username, string message)
+        public static void RecieveMessage()
         {
-            mainChatBox.AppendText(username + ":");
-            mainChatBox.AppendText("\n");
-            mainChatBox.AppendText(message);
-            mainChatBox.AppendText("\n\n");
-            mainChatBox.ScrollToCaret();
+            main
         }
     }
 }

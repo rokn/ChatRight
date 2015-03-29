@@ -39,13 +39,16 @@
             this.RegisterButton = new System.Windows.Forms.Button();
             this.chatBox = new System.Windows.Forms.TextBox();
             this.SendMessageButton = new System.Windows.Forms.Button();
-            this.mainChatBox = new System.Windows.Forms.TextBox();
+            mainChatBox = new System.Windows.Forms.TextBox();
             this.usernameLabel = new System.Windows.Forms.Label();
             this.emailLabel = new System.Windows.Forms.Label();
             this.passwordLabel = new System.Windows.Forms.Label();
             this.passConfirmText = new System.Windows.Forms.TextBox();
             this.passConfirmLabel = new System.Windows.Forms.Label();
             this.sendRegisterButton = new System.Windows.Forms.Button();
+            this.activationCodeText = new System.Windows.Forms.TextBox();
+            this.activateButton = new System.Windows.Forms.Button();
+            this.logInSendButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // CloseButton
@@ -142,15 +145,15 @@
             this.SendMessageButton.Size = new System.Drawing.Size(24, 54);
             this.SendMessageButton.TabIndex = 10;
             this.SendMessageButton.UseVisualStyleBackColor = true;
+            this.SendMessageButton.Click += new System.EventHandler(this.SendMessageButton_Click);
             // 
             // mainChatBox
             // 
-            this.mainChatBox.Location = new System.Drawing.Point(11, 6);
-            this.mainChatBox.Multiline = true;
-            this.mainChatBox.Name = "mainChatBox";
-            this.mainChatBox.Size = new System.Drawing.Size(72, 37);
-            this.mainChatBox.TabIndex = 8;
-            this.mainChatBox.Text = "asdfasdfasdfasdd";
+            mainChatBox.Location = new System.Drawing.Point(11, 6);
+            mainChatBox.Multiline = true;
+            mainChatBox.Name = "mainChatBox";
+            mainChatBox.Size = new System.Drawing.Size(72, 37);
+            mainChatBox.TabIndex = 8;
             // 
             // usernameLabel
             // 
@@ -206,18 +209,50 @@
             this.sendRegisterButton.UseVisualStyleBackColor = true;
             this.sendRegisterButton.Click += new System.EventHandler(this.sendRegisterButton_Click);
             // 
+            // activationCodeText
+            // 
+            this.activationCodeText.Location = new System.Drawing.Point(94, 289);
+            this.activationCodeText.Name = "activationCodeText";
+            this.activationCodeText.Size = new System.Drawing.Size(67, 20);
+            this.activationCodeText.TabIndex = 17;
+            // 
+            // activateButton
+            // 
+            this.activateButton.AutoSize = true;
+            this.activateButton.Location = new System.Drawing.Point(94, 315);
+            this.activateButton.Name = "activateButton";
+            this.activateButton.Size = new System.Drawing.Size(75, 23);
+            this.activateButton.TabIndex = 18;
+            this.activateButton.Text = "Activate";
+            this.activateButton.UseVisualStyleBackColor = true;
+            this.activateButton.Click += new System.EventHandler(this.activateButton_Click);
+            // 
+            // logInSendButton
+            // 
+            this.logInSendButton.AutoSize = true;
+            this.logInSendButton.Location = new System.Drawing.Point(60, 106);
+            this.logInSendButton.Name = "logInSendButton";
+            this.logInSendButton.Size = new System.Drawing.Size(75, 23);
+            this.logInSendButton.TabIndex = 19;
+            this.logInSendButton.Text = "Log In";
+            this.logInSendButton.UseVisualStyleBackColor = true;
+            this.logInSendButton.Click += new System.EventHandler(this.logInSendButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(267, 279);
+            this.ClientSize = new System.Drawing.Size(265, 607);
+            this.Controls.Add(this.logInSendButton);
+            this.Controls.Add(this.activateButton);
+            this.Controls.Add(this.activationCodeText);
             this.Controls.Add(this.sendRegisterButton);
             this.Controls.Add(this.passConfirmLabel);
             this.Controls.Add(this.passConfirmText);
             this.Controls.Add(this.passwordLabel);
             this.Controls.Add(this.emailLabel);
             this.Controls.Add(this.usernameLabel);
-            this.Controls.Add(this.mainChatBox);
+            this.Controls.Add(mainChatBox);
             this.Controls.Add(this.SendMessageButton);
             this.Controls.Add(this.chatBox);
             this.Controls.Add(this.RegisterButton);
@@ -250,13 +285,16 @@
         private System.Windows.Forms.Button RegisterButton;
         private System.Windows.Forms.TextBox chatBox;
         private System.Windows.Forms.Button SendMessageButton;
-        private System.Windows.Forms.TextBox mainChatBox;
         private System.Windows.Forms.Label usernameLabel;
         private System.Windows.Forms.Label emailLabel;
         private System.Windows.Forms.Label passwordLabel;
         private System.Windows.Forms.TextBox passConfirmText;
         private System.Windows.Forms.Label passConfirmLabel;
         private System.Windows.Forms.Button sendRegisterButton;
+        private System.Windows.Forms.TextBox activationCodeText;
+        private System.Windows.Forms.Button activateButton;
+        private System.Windows.Forms.Button logInSendButton;
+        private static System.Windows.Forms.TextBox mainChatBox;
     }
 }
 

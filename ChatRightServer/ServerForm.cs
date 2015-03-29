@@ -49,30 +49,53 @@ namespace ChatRightServer
         {
             if (ValidateUserName(userName) && ValidateEmail(email))
             {
+                int code = rand.Next(1010, 9999);
                 DataRow newRow = dataSet.Tables[0].NewRow();
                 newRow[1] = userName;
                 newRow[2] = password;
                 newRow[3] = email;
                 newRow[4] = false;
-                newRow[5] = rand;
+                newRow[5] = code.ToString();
                 dataSet.Tables[0].Rows.Add(newRow);
 
-                SendActicationMail(email, (int)newRow[5]);
+                SendActicationMail(email, code);
 
-                try
-                {
-                    objConnect.UpdateDatabase(dataSet);
-                    maxRows++;
-                }
-                catch
-                {
-                    return false;
-                }
+                maxRows++;
                 return true;
             }
             else
             {
                 return false;
+            }
+        }
+
+        public static bool CheckActivationCode(string username, string code)
+        {
+            foreach (DataRow row in dataSet.Tables[0].Rows)
+            {
+                if (username == row[1].ToString())
+                {
+                    if (code == row[5].ToString())
+                    {
+                        row[4] = true;
+                        row[5] = DBNull.Value;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static void UpdateDatabase()
+        {
+            try
+            {
+                objConnect.UpdateDatabase(dataSet);
+            }
+            catch
+            {
+                MessageBox.Show("Problem with database update");
             }
         }
 
@@ -142,6 +165,28 @@ namespace ChatRightServer
             {
                 MessageBox.Show(err.Message);
             }
+        }
+
+        public static int CheckLoginStatus(string username, string password)
+        {
+            foreach (DataRow row in dataSet.Tables[0].Rows)
+            {
+                if (username == row[1].ToString())
+                {
+                    if (password == row[2].ToString())
+                    {
+                        if ((bool)row[4])
+                        {
+                            return 0;
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+                    }
+                }
+            }
+            return -1;
         }
     }
 }

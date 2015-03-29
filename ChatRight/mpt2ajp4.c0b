@@ -62,7 +62,7 @@ namespace ChatRight
             networkUpdateTimer.Interval = 20;
             networkUpdateTimer.Start();
             networkUpdateTimer.Tick += networkUpdateTimer_Tick;
-            NetworkingClient.InitializeClient("37.157.138.76");
+            NetworkingClient.InitializeClient("localhost");
         }
 
         private void networkUpdateTimer_Tick(object sender, EventArgs e)
@@ -229,21 +229,11 @@ namespace ChatRight
             Menus[MenuType.SignIn].Add(passwordLabel);
 
             mainChatBox.Font = messageFont;
-            mainChatBox.Width = Width - 22;
-            mainChatBox.Height = workingAreaHeight - (this.Height - chatBox.Location.Y) - 20;
-            mainChatBox.Location = new Point((Width - mainChatBox.Width) / 2, logoHeight + 8);
-            mainChatBox.ScrollBars = ScrollBars.Vertical;
-            mainChatBox.ReadOnly = true;
-
-            chatBox.KeyPress += chatBox_KeyPress;
+            mainChatBox.Width = Width - 30;
+            mainChatBox.Height = workingAreaHeight - (this.Height - chatBox.Location.Y);
 
             Menus[MenuType.MainScreen].Add(chatBox);
             Menus[MenuType.MainScreen].Add(mainChatBox);
-
-            for (int i = 0; i < 100; i++)
-            {
-                mainChatBox.AppendText("\n");
-            }
 
             ChangeMenu(MenuType.StartUp);
 
@@ -418,11 +408,7 @@ namespace ChatRight
 
         private void UnslideButton_Click(object sender, EventArgs e)
         {
-            foreach (Control control in Menus[currentMenu])
-            {
-                control.Visible = true;
-            }
-            foreach (Control control in staticControls)
+            foreach (Control control in Controls)
             {
                 control.Visible = true;
             }
@@ -531,7 +517,6 @@ namespace ChatRight
                 userText.Clear();
                 passText.Clear();
                 emailText.Clear();
-                passConfirmText.Clear();
             }
         }
 
@@ -547,42 +532,6 @@ namespace ChatRight
                 userText.Clear();
                 passText.Clear();
             }
-        }
-
-        private void chatBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Enter)
-            {
-                SendChatMessage();
-            }
-        }
-
-        private bool SendChatMessage()
-        {
-            if (chatBox.Text.Length > 0)
-            {
-                NetworkingClient.SendChatMessage(UserName, chatBox.Text);
-                chatBox.Clear();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private void SendMessageButton_Click(object sender, EventArgs e)
-        {
-            SendChatMessage();
-        }
-
-        public static void RecieveMessage(string username, string message)
-        {
-            mainChatBox.AppendText(username + ":");
-            mainChatBox.AppendText("\n");
-            mainChatBox.AppendText(message);
-            mainChatBox.AppendText("\n\n");
-            mainChatBox.ScrollToCaret();
         }
     }
 }

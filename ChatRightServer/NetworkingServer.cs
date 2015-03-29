@@ -9,8 +9,17 @@ namespace ChatRightServer
     public enum Packets
     {
         CONNECT,
-        REGISTER
+        REGISTER,
+        ACTIVATION,
+        LOGIN,
+        SENDMESSAGE
     }
+
+    //public struct User
+    //{
+    //    public int Id;
+    //    public NetConnection connection;
+    //}
 
     public static class NetworkingServer
     {
@@ -60,10 +69,37 @@ namespace ChatRightServer
 
         private static void HandlePacket(Packets packet)
         {
+            NetOutgoingMessage outMsg = Server.CreateMessage();
             switch (packet)
             {
                 case Packets.REGISTER:
-                    ServerForm.UserRegister(inc.ReadString(), inc.ReadString(), inc.ReadString());
+                    bool registrationSuccessful = ServerForm.UserRegister(inc.ReadString(), inc.ReadString(), inc.ReadString());
+                    outMsg.Write((byte)Packets.REGISTER);
+                    outMsg.Write(registrationSuccessful);
+                    Server.SendMessage(outMsg, inc.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                    ServerForm.UpdateDatabase();
+                    break;
+
+                case Packets.ACTIVATION:
+                    bool codeActivated = ServerForm.CheckActivationCode(inc.ReadString(), inc.ReadString());
+                    outMsg.Write((byte)Packets.ACTIVATION);
+                    outMsg.Write(codeActivated);
+                    Server.SendMessage(outMsg, inc.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                    ServerForm.UpdateDatabase();
+                    break;
+
+                case Packets.LOGIN:
+                    int logInResult = ServerForm.CheckLoginStatus(inc.ReadString(), inc.ReadString()); // -1 Wrong, 0 Right, 1 Right but not activated
+                    outMsg.Write((byte)Packets.LOGIN);
+                    outMsg.Write(logInResult);
+                    Server.SendMessage(outMsg, inc.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+                    break;
+
+                case Packets.SENDMESSAGE:
+                    outMsg.Write((byte)Packets.SENDMESSAGE);
+                    outMsg.Write(inc.ReadString());
+                    outMsg.Write(inc.ReadString());
+                    Server.SendMessage(outMsg, Server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
                     break;
             }
         }
