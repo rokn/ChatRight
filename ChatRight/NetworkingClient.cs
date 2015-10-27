@@ -22,7 +22,9 @@ namespace ChatRight
         private static NetPeerConfiguration Config;
         public static bool IsHost;
         public static bool IsInitialized;
+        private static bool IsConnected;
         private static string hostIp;
+        private static Timer connectionTimer;
 
         private static NetIncomingMessage inc;
 
@@ -32,12 +34,28 @@ namespace ChatRight
             IsHost = false;
             hostIp = ip;
             Client = new NetClient(Config);
-            NetOutgoingMessage outMsg = Client.CreateMessage();
             Client.Start();
+            SendConnectionMessage();
+            IsInitialized = true;
+            IsConnected = false;
+            Peer = Client;
+            connectionTimer = new Timer();
+            connectionTimer.Tick += connectionTimer_Tick;
+            connectionTimer.Interval = 100;
+            connectionTimer.Start();
+        }
+
+        private static void connectionTimer_Tick(object sender, EventArgs e)
+        {
+            if (!IsConnected)
+                SendConnectionMessage();
+        }
+
+        private static void SendConnectionMessage()
+        {
+            NetOutgoingMessage outMsg = Client.CreateMessage();
             outMsg.Write((byte)Packets.CONNECT);
             Client.Connect(hostIp, 14242, outMsg);
-            IsInitialized = true;
-            Peer = Client;
         }
 
         public static void Update()
@@ -70,6 +88,15 @@ namespace ChatRight
         {
             switch (packet)
             {
+                case Packets.CONNECT:
+                    if (!IsConnected)
+                    {
+                        IsConnected = true;
+                        connectionTimer.Stop();
+                    }
+
+                    break;
+
                 case Packets.REGISTER:
                     if (inc.ReadBoolean())
                     {

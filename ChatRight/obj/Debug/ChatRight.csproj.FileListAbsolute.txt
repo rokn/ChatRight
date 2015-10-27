@@ -29,5 +29,6 @@ E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Resources\Icon.ico
 E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Resources\Slide.png
 E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Resources\Unslide.png
 E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Resources\ChatRightLogo.png
-E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Resources\James Almacen.ttf
 E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Lidgren.Network.dll
+E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Resources\Aaargh.ttf
+E:\Dropbox\ChatProgram\ChatRight\ChatRight\bin\Debug\Resources\Contacts.png

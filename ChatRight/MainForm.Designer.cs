@@ -37,9 +37,7 @@
             this.userText = new System.Windows.Forms.TextBox();
             this.LoginButton = new System.Windows.Forms.Button();
             this.RegisterButton = new System.Windows.Forms.Button();
-            this.chatBox = new System.Windows.Forms.TextBox();
             this.SendMessageButton = new System.Windows.Forms.Button();
-            mainChatBox = new System.Windows.Forms.TextBox();
             this.usernameLabel = new System.Windows.Forms.Label();
             this.emailLabel = new System.Windows.Forms.Label();
             this.passwordLabel = new System.Windows.Forms.Label();
@@ -49,11 +47,12 @@
             this.activationCodeText = new System.Windows.Forms.TextBox();
             this.activateButton = new System.Windows.Forms.Button();
             this.logInSendButton = new System.Windows.Forms.Button();
+            this.contactsButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // CloseButton
             // 
-            this.CloseButton.Location = new System.Drawing.Point(231, 12);
+            this.CloseButton.Location = new System.Drawing.Point(245, 13);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Size = new System.Drawing.Size(24, 23);
             this.CloseButton.TabIndex = 0;
@@ -62,7 +61,7 @@
             // 
             // SlideButton
             // 
-            this.SlideButton.Location = new System.Drawing.Point(201, 12);
+            this.SlideButton.Location = new System.Drawing.Point(215, 13);
             this.SlideButton.Name = "SlideButton";
             this.SlideButton.Size = new System.Drawing.Size(24, 23);
             this.SlideButton.TabIndex = 1;
@@ -87,7 +86,7 @@
             // 
             // HideButton
             // 
-            this.HideButton.Location = new System.Drawing.Point(171, 12);
+            this.HideButton.Location = new System.Drawing.Point(185, 13);
             this.HideButton.Name = "HideButton";
             this.HideButton.Size = new System.Drawing.Size(24, 23);
             this.HideButton.TabIndex = 2;
@@ -130,30 +129,14 @@
             this.RegisterButton.UseVisualStyleBackColor = true;
             this.RegisterButton.Click += new System.EventHandler(this.Register_Button_Click);
             // 
-            // chatBox
-            // 
-            this.chatBox.Location = new System.Drawing.Point(11, 45);
-            this.chatBox.Multiline = true;
-            this.chatBox.Name = "chatBox";
-            this.chatBox.Size = new System.Drawing.Size(212, 54);
-            this.chatBox.TabIndex = 9;
-            // 
             // SendMessageButton
             // 
-            this.SendMessageButton.Location = new System.Drawing.Point(231, 45);
+            this.SendMessageButton.Location = new System.Drawing.Point(245, 46);
             this.SendMessageButton.Name = "SendMessageButton";
             this.SendMessageButton.Size = new System.Drawing.Size(24, 54);
             this.SendMessageButton.TabIndex = 10;
             this.SendMessageButton.UseVisualStyleBackColor = true;
             this.SendMessageButton.Click += new System.EventHandler(this.SendMessageButton_Click);
-            // 
-            // mainChatBox
-            // 
-            mainChatBox.Location = new System.Drawing.Point(11, 6);
-            mainChatBox.Multiline = true;
-            mainChatBox.Name = "mainChatBox";
-            mainChatBox.Size = new System.Drawing.Size(72, 37);
-            mainChatBox.TabIndex = 8;
             // 
             // usernameLabel
             // 
@@ -238,11 +221,21 @@
             this.logInSendButton.UseVisualStyleBackColor = true;
             this.logInSendButton.Click += new System.EventHandler(this.logInSendButton_Click);
             // 
+            // contactsButton
+            // 
+            this.contactsButton.Location = new System.Drawing.Point(155, 13);
+            this.contactsButton.Name = "contactsButton";
+            this.contactsButton.Size = new System.Drawing.Size(24, 23);
+            this.contactsButton.TabIndex = 20;
+            this.contactsButton.UseVisualStyleBackColor = true;
+            this.contactsButton.Click += new System.EventHandler(this.contactsButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(265, 607);
+            this.ClientSize = new System.Drawing.Size(281, 607);
+            this.Controls.Add(this.contactsButton);
             this.Controls.Add(this.logInSendButton);
             this.Controls.Add(this.activateButton);
             this.Controls.Add(this.activationCodeText);
@@ -252,9 +245,7 @@
             this.Controls.Add(this.passwordLabel);
             this.Controls.Add(this.emailLabel);
             this.Controls.Add(this.usernameLabel);
-            this.Controls.Add(mainChatBox);
             this.Controls.Add(this.SendMessageButton);
-            this.Controls.Add(this.chatBox);
             this.Controls.Add(this.RegisterButton);
             this.Controls.Add(this.LoginButton);
             this.Controls.Add(this.userText);
@@ -283,7 +274,6 @@
         private System.Windows.Forms.TextBox userText;
         private System.Windows.Forms.Button LoginButton;
         private System.Windows.Forms.Button RegisterButton;
-        private System.Windows.Forms.TextBox chatBox;
         private System.Windows.Forms.Button SendMessageButton;
         private System.Windows.Forms.Label usernameLabel;
         private System.Windows.Forms.Label emailLabel;
@@ -294,7 +284,7 @@
         private System.Windows.Forms.TextBox activationCodeText;
         private System.Windows.Forms.Button activateButton;
         private System.Windows.Forms.Button logInSendButton;
-        private static System.Windows.Forms.TextBox mainChatBox;
+        private System.Windows.Forms.Button contactsButton;
     }
 }
 

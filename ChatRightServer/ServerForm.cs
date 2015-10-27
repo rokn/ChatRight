@@ -132,7 +132,7 @@ namespace ChatRightServer
                     return false;
                 }
             }
-            return Regex.IsMatch(userName, @"^[a-zA-Z0-9]+$");
+            return Regex.IsMatch(userName, @"^[a-zA-Z0-9_]+$");
         }
 
         private static bool ValidateEmail(string email)

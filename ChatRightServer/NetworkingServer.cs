@@ -37,7 +37,6 @@ namespace ChatRightServer
             Config.EnableMessageType(NetIncomingMessageType.ConnectionApproval);
             Server = new NetServer(Config);
             Server.Start();
-            MessageBox.Show("Server started");
             IsInitialized = true;
         }
 

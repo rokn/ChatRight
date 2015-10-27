@@ -26,6 +26,7 @@ namespace ChatRight
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, ExactSpelling = true, SetLastError = true)]
         internal static extern void MoveWindow(IntPtr hwnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
+        private static MainTextBox mainChatBox;
         public static string UserName;
         public static Font MainFont;
         public static Font messageFont;
@@ -37,6 +38,7 @@ namespace ChatRight
         private static MenuType currentMenu;
         private static Dictionary<MenuType, List<Control>> Menus;
         private Point defaultPosition;
+        private bool contactsShown;
 
         private Image logoImage;
         private NotifyIcon notifyIcon1;
@@ -47,6 +49,8 @@ namespace ChatRight
 
         private PrivateFontCollection fontCollection;
         private Timer networkUpdateTimer = new Timer();
+
+        private MainTextBox chatBox;
 
         public MainForm()
         {
@@ -84,6 +88,14 @@ namespace ChatRight
 
         private void InitializeControls()
         {
+            contactsShown = false;
+
+            mainChatBox = new MainTextBox();
+            this.Controls.Add(mainChatBox);
+
+            chatBox = new MainTextBox(new Size(212, 54));
+            this.Controls.Add(chatBox);
+
             foreach (Control control in Controls)
             {
                 control.Visible = false;
@@ -94,9 +106,9 @@ namespace ChatRight
             workingAreaHeight = Height - logoHeight;
 
             fontCollection = new PrivateFontCollection();
-            fontCollection.AddFontFile(@"Resources/James Almacen.ttf");
+            fontCollection.AddFontFile(@"Resources/Aaargh.ttf");
             MainFont = new Font(fontCollection.Families[0], 15);
-            messageFont = new Font(fontCollection.Families[0], 10);
+            messageFont = new Font(fontCollection.Families[0], 12);
 
             Color ButtonBackColor = Color.FromArgb(100, 0, 0);
             Color ButtonBorderColor = Color.FromArgb(255, 0, 0, 0);
@@ -171,9 +183,11 @@ namespace ChatRight
             emailLabel.Font = messageFont;
             passwordLabel.Font = messageFont;
             passConfirmLabel.Font = messageFont;
-            chatBox.Font = messageFont;
 
-            chatBox.Location = new Point(chatBox.Location.X, (Height - roundnessRadius) - chatBox.Height);
+            userText.KeyPress += inputTextKeyPress;
+            emailText.KeyPress += inputTextKeyPress;
+            passText.KeyPress += inputTextKeyPress;
+            passConfirmText.KeyPress += inputTextKeyPress;
 
             userText.Location = new Point(emailLabel.Location.X, usernameLabel.Location.Y + usernameLabel.Height + 2);
 
@@ -228,14 +242,35 @@ namespace ChatRight
             Menus[MenuType.SignIn].Add(passText);
             Menus[MenuType.SignIn].Add(passwordLabel);
 
+            chatBox.Font = messageFont;
+            chatBox.Size = new System.Drawing.Size(230, 54);
+            chatBox.Location = new Point(10, (Height - roundnessRadius) - chatBox.Height);
+            chatBox.Multiline = true;
+            chatBox.KeyPress += chatBox_KeyPress;
+            chatBox.BackColor = Color.FromArgb(255, 211, 211, 211);
+            chatBox.DetectUrls = true;
+            chatBox.LinkClicked += mainChatBox_LinkClicked;
+            chatBox.UpdateShape();
+
             mainChatBox.Font = messageFont;
             mainChatBox.Width = Width - 22;
             mainChatBox.Height = workingAreaHeight - (this.Height - chatBox.Location.Y) - 20;
             mainChatBox.Location = new Point((Width - mainChatBox.Width) / 2, logoHeight + 8);
-            mainChatBox.ScrollBars = ScrollBars.Vertical;
+            mainChatBox.ScrollBars = RichTextBoxScrollBars.Vertical;
             mainChatBox.ReadOnly = true;
+            mainChatBox.Multiline = true;
+            mainChatBox.BackColor = Color.FromArgb(255, 211, 211, 211);
+            mainChatBox.DetectUrls = true;
+            mainChatBox.LinkClicked += mainChatBox_LinkClicked;
+            mainChatBox.UpdateShape();
 
-            chatBox.KeyPress += chatBox_KeyPress;
+            ToolTip contactsTooltip = new ToolTip();
+            contactsTooltip.SetToolTip(SlideButton, "Show Contacts");
+            contactsButton.Image = Bitmap.FromFile(@"Resources/Contacts.png");
+            contactsButton.BackColor = ButtonBackColor;
+            contactsButton.FlatAppearance.BorderColor = ButtonBorderColor;
+            contactsButton.FlatStyle = FlatStyle.Flat;
+            Menus[MenuType.MainScreen].Add(contactsButton);
 
             Menus[MenuType.MainScreen].Add(chatBox);
             Menus[MenuType.MainScreen].Add(mainChatBox);
@@ -254,6 +289,26 @@ namespace ChatRight
                     control.Visible = true;
                 }
             }
+        }
+
+        private void inputTextKeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                if (currentMenu == MenuType.SignIn)
+                {
+                    SignIn();
+                }
+                else if (currentMenu == MenuType.Register)
+                {
+                    Register();
+                }
+            }
+        }
+
+        private void mainChatBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
         }
 
         public static void ChangeMenu(MenuType menuType)
@@ -296,7 +351,7 @@ namespace ChatRight
         {
         }
 
-        public GraphicsPath CreateRoundRectangle(Rectangle r, int radius,
+        public static GraphicsPath CreateRoundRectangle(Rectangle r, int radius,
                                   RectangleCorners corners)
         {
             Rectangle tlc = new Rectangle(r.Left, r.Top, 2 * radius,
@@ -497,6 +552,10 @@ namespace ChatRight
             {
                 NetworkingClient.SendRegistrationData(userText.Text, emailText.Text, passText.Text);
                 UserName = userText.Text;
+                userText.Clear();
+                passText.Clear();
+                emailText.Clear();
+                passConfirmText.Clear();
                 return true;
             }
             else
@@ -511,6 +570,8 @@ namespace ChatRight
             {
                 NetworkingClient.SendLoginData(userText.Text, passText.Text);
                 UserName = userText.Text;
+                userText.Clear();
+                passText.Clear();
                 return true;
             }
             else
@@ -526,13 +587,7 @@ namespace ChatRight
 
         private void sendRegisterButton_Click(object sender, EventArgs e)
         {
-            if (Register())
-            {
-                userText.Clear();
-                passText.Clear();
-                emailText.Clear();
-                passConfirmText.Clear();
-            }
+            Register();
         }
 
         private void activateButton_Click(object sender, EventArgs e)
@@ -542,18 +597,18 @@ namespace ChatRight
 
         private void logInSendButton_Click(object sender, EventArgs e)
         {
-            if (SignIn())
-            {
-                userText.Clear();
-                passText.Clear();
-            }
+            SignIn();
         }
 
         private void chatBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == (char)Keys.Enter)
             {
-                SendChatMessage();
+                if (Control.ModifierKeys != Keys.Shift)
+                {
+                    chatBox.Text = chatBox.Text.Remove(chatBox.Text.Length - 1);
+                    SendChatMessage();
+                }
             }
         }
 
@@ -578,11 +633,33 @@ namespace ChatRight
 
         public static void RecieveMessage(string username, string message)
         {
-            mainChatBox.AppendText(username + ":");
+            mainChatBox.AppendText(username + ":", Color.Blue);
             mainChatBox.AppendText("\n");
             mainChatBox.AppendText(message);
             mainChatBox.AppendText("\n\n");
             mainChatBox.ScrollToCaret();
+        }
+
+        private void contactsButton_Click(object sender, EventArgs e)
+        {
+            if (!contactsShown)
+            {
+                this.Width *= 2;
+                this.Location = new Point(Screen.GetWorkingArea(this).Width - this.Width, this.Location.Y);
+                windowShape = CreateRoundRectangle(new Rectangle(0, 0, Width, Height), roundnessRadius, RectangleCorners.TopLeft | RectangleCorners.BottomLeft);
+                this.Region = new Region(windowShape);
+                contactsShown = true;
+                Invalidate();
+            }
+            else
+            {
+                this.Width /= 2;
+                this.Location = defaultPosition;
+                windowShape = CreateRoundRectangle(new Rectangle(0, 0, Width, Height), roundnessRadius, RectangleCorners.TopLeft | RectangleCorners.BottomLeft);
+                this.Region = new Region(windowShape);
+                contactsShown = false;
+                Invalidate();
+            }
         }
     }
 }
