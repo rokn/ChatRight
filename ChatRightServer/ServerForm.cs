@@ -112,7 +112,7 @@ namespace ChatRightServer
                 mail.Body = "This email have been registered for the application ChatRight(C).\n\n Activation code : " + activationCode.ToString() + "\n If you haven't regstered for ChatRight(C) just ignore this e-mail.";
 
                 SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("amindov98@gmail.com", "7410852963");
+                SmtpServer.Credentials = new System.Net.NetworkCredential("amindov98@gmail.com", "");
                 SmtpServer.EnableSsl = true;
 
                 SmtpServer.Send(mail);
